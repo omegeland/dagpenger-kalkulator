@@ -10,9 +10,9 @@ Hvis en person har rett på dagpenger, må følgende ting vurderes for å kalkul
 - Hvis siste årslønn er størst, er årslønnen høyere enn 6G.
 
 Hvis vi tar en person sine siste tre årslønner:
-- 2024 - 550 000 kr
-- 2023 - 24 000 kr
-- 2022 - 110 000 kr
+- 2025 - 550 000 kr
+- 2024 - 24 000 kr
+- 2023 - 110 000 kr
 
 Dermed skal personen ha rett på en dagsats på 2116 kr
 
