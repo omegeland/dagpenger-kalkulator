@@ -1,5 +1,4 @@
 package no.nav.dagpenger;
-
 import no.nav.grunnbeløp.GrunnbeløpVerktøy;
 import no.nav.årslønn.Årslønn;
 
@@ -24,9 +23,9 @@ import java.util.List;
  */
 public class DagpengerKalkulator {
 
-    public final GrunnbeløpVerktøy grunnbeløpVerktøy;
+    public final GrunnbeløpVerktøy grunnbeløpVerktøy; //mulig at den bør gjøres private slik at andre klasser ikke kan endre på listen
 
-    public final List<Årslønn> årslønner;
+    public final List<Årslønn> årslønner; //mulig at den bør gjøres private slik at andre klasser ikke kan endre på listen
 
     public DagpengerKalkulator() {
         this.grunnbeløpVerktøy = new GrunnbeløpVerktøy();
@@ -40,20 +39,20 @@ public class DagpengerKalkulator {
      * @return dagsatsen en person har rett på.
      */
     public double kalkulerDagsats() {
-        double dagsats = 0;
-
+        BeregningsMetode metode = velgBeregningsMetode();
         int arbeidsdagerIÅret = 260;
-        if (harRettigheterTilDagpenger() == true) {
-            if (velgBeregningsMetode() == "SISTE_ÅRSLØNN") {
-                dagsats = Math.ceil(hentÅrslønnVedIndeks(0).hentÅrslønn() / arbeidsdagerIÅret);
-            } else if (velgBeregningsMetode() == "GJENNOMSNITTET_AV_TRE_ÅR") {
-                dagsats = Math.ceil((summerNyligeÅrslønner(3) / 3) / arbeidsdagerIÅret);
-            } else if (velgBeregningsMetode() == "MAKS_ÅRLIG_DAGPENGERGRUNNLAG") {
-                dagsats = Math.ceil(grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag() / arbeidsdagerIÅret);
-            }
-        }
 
-        return dagsats;
+        if (!harRettigheterTilDagpenger()) {
+            return 0;
+        }
+            
+        if (metode == BeregningsMetode.SISTE_ÅRSLØNN) {
+            return Math.ceil(hentÅrslønnVedIndeks(0).hentÅrslønn() / arbeidsdagerIÅret);
+        } else if (metode == BeregningsMetode.GJENNOMSNITTET_AV_TRE_ÅR) {
+            return Math.ceil((summerNyligeÅrslønner(3) / 3) / arbeidsdagerIÅret);
+        } else if (metode == BeregningsMetode.MAKS_ÅRLIG_DAGPENGERGRUNNLAG) {
+            return Math.ceil(grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag() / arbeidsdagerIÅret);
+        }return 0;
     }
 
     /**
@@ -76,16 +75,16 @@ public class DagpengerKalkulator {
      * Velger hva som skal være beregnings metode for dagsats ut ifra en person sine årslønner.
      * @return beregnings metode for dagsats.
      */
-    public String velgBeregningsMetode() {
-        String beregningsMetode;
+    public BeregningsMetode velgBeregningsMetode() {
+        BeregningsMetode beregningsMetode;
 
         if (hentÅrslønnVedIndeks(0).hentÅrslønn() > (summerNyligeÅrslønner(3) / 3)) {
-           beregningsMetode = "SISTE_ÅRSLØNN";
+           beregningsMetode = BeregningsMetode.SISTE_ÅRSLØNN;
            if (hentÅrslønnVedIndeks(0).hentÅrslønn() > grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag()) {
-               beregningsMetode = "MAKS_ÅRLIG_DAGPENGERGRUNNLAG";
+               beregningsMetode = BeregningsMetode.MAKS_ÅRLIG_DAGPENGERGRUNNLAG;
            }
         } else {
-            beregningsMetode = "GJENNOMSNITTET_AV_TRE_ÅR";
+            beregningsMetode = BeregningsMetode.GJENNOMSNITTET_AV_TRE_ÅR;
         }
 
         return beregningsMetode;
