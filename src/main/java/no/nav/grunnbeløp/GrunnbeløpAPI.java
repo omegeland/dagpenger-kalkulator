@@ -37,7 +37,10 @@ public class GrunnbeløpAPI {
         HttpRequest grunnbeløpSpørring = HttpRequest.newBuilder(URI.create(DOTENV.get("G_API_URL"))).build();
 
         HttpResponse<String> grunnbeløpRespons =  this.grunnbeløpHTTPKlient.send(grunnbeløpSpørring, HttpResponse.BodyHandlers.ofString());
-
+        
+        if (grunnbeløpRespons.statusCode() != 200) {
+            throw new IOException("Klarte ikke hente grunnbeløp");
+        }
         return new JSONObject(grunnbeløpRespons.body()).getDouble("grunnbeløp");
     }
 }
