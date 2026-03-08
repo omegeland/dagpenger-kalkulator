@@ -1,3 +1,10 @@
+import org.gradle.api.tasks.compile.JavaCompile
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+
 plugins {
     id("java")
 }
