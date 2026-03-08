@@ -18,7 +18,6 @@ import java.net.http.HttpResponse;
 public class GrunnbeløpAPI {
 
     private final static Dotenv DOTENV = Dotenv.load();
-
     private final HttpClient grunnbeløpHTTPKlient;
 
     public GrunnbeløpAPI() {

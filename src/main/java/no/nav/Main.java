@@ -19,7 +19,7 @@ public class Main {
         Sak sak = dagpengerKalkulator.kalkulerSak();
         Saksbehandler saksbehandler = new Saksbehandler("Ola Nordmann", Spesialiseringer.INNVILGET);
         System.out.println("Spesialisering: " + sak.hentSpesialisering());
-        System.out.println("Spesialisering hos Saksbehandler: " + saksbehandler.hestSpesialisering());
+        System.out.println("Spesialisering hos Saksbehandler: " + saksbehandler.hentSpesialisering());
         
         saksbehandler.godkjennSak(sak);
 

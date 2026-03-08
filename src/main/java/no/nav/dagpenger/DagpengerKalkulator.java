@@ -61,6 +61,13 @@ public class DagpengerKalkulator {
         }
     }
     
+
+    /**
+     * Kalkulerer en sak for en person basert på om personen har rett på dagpenger eller ikke, 
+     * og hvilken beregningsmetode som skal brukes for å kalkulere dagsatsen.
+     * @return en sak for en person basert på om personen har rett på dagpenger eller ikke,
+     *  og hvilken beregningsmetode som skal brukes for å kalkulere dagsatsen.
+     */
     public Sak kalkulerSak() {
 
         if (harIkkeGrunnlagForDagpenger()) {
@@ -82,6 +89,10 @@ public class DagpengerKalkulator {
         }
     }
 
+    /**
+     * Sjekker om en person ikke har grunnlag for å få dagpenger eller ikke.
+     * @return om en person ikke har grunnlag for å få dagpenger eller ikke.
+     */
     public boolean harIkkeGrunnlagForDagpenger() {
         return årslønner.isEmpty() || !harRettigheterTilDagpenger();  
     }
@@ -118,6 +129,10 @@ public class DagpengerKalkulator {
         return beregningsMetode;
     }
 
+    /**
+     * Legger til en årslønn i registeret, og sorterer registeret basert på den nyligste årslønnen.
+     * @param årslønn årslønnen som skal legges til i registeret.
+     */
     public void leggTilÅrslønn(Årslønn årslønn) {
         this.årslønner.add(årslønn);
         this.sorterÅrslønnerBasertPåNyesteÅrslønn();

@@ -14,7 +14,7 @@ import no.nav.årslønn.Årslønn;
 public class SaksbehandlingTest {
 
     @Test
-    void skalOppretteAvslagssakVedForLavInntekt() {
+    void testSkalOppretteAvslagssakVedForLavInntekt() {
         DagpengerKalkulator kalkulator = new DagpengerKalkulator();
 
         kalkulator.leggTilÅrslønn(new Årslønn(2025, 80000));
@@ -29,7 +29,7 @@ public class SaksbehandlingTest {
     }
 
     @Test
-    void skalOppretteInnvilgetSak() {
+    void testSkalOppretteInnvilgetSak() {
         DagpengerKalkulator kalkulator = new DagpengerKalkulator();
 
         kalkulator.leggTilÅrslønn(new Årslønn(2025, 550000));
@@ -43,7 +43,7 @@ public class SaksbehandlingTest {
     }
 
     @Test
-    void skalOppretteMakssatsSak() {
+    void testSkalOppretteMakssatsSak() {
         DagpengerKalkulator kalkulator = new DagpengerKalkulator();
 
         kalkulator.leggTilÅrslønn(new Årslønn(2025, 830000));
@@ -57,7 +57,7 @@ public class SaksbehandlingTest {
     }
 
     @Test
-    void saksbehandlerSkalKunHenteUbehandledeSakerInnenforSinSpesialisering() {
+    void testSaksbehandlerSkalKunHenteUbehandledeSakerInnenforSinSpesialisering() {
 
         Saksbehandler saksbehandler = new Saksbehandler("Ola Nordmann", Spesialiseringer.INNVILGET);
 
@@ -79,7 +79,7 @@ public class SaksbehandlingTest {
     }
 
     @Test
-    void saksbehandlerSkalKunneGodkjenneSak() {
+    void testSaksbehandlerSkalKunneGodkjenneSak() {
         Saksbehandler saksbehandler = new Saksbehandler("Ola Nordmann", Spesialiseringer.INNVILGET);
         Sak sak = new Sak(2116, Spesialiseringer.INNVILGET);
 
@@ -89,7 +89,7 @@ public class SaksbehandlingTest {
     }
 
     @Test
-    void saksbehandlerSkalKunneAvslaaSak() {
+    void testSaksbehandlerSkalKunneAvslaaSak() {
         Saksbehandler saksbehandler = new Saksbehandler("Ola Nordmann", Spesialiseringer.INNVILGET);
         Sak sak = new Sak(2116, Spesialiseringer.INNVILGET);
 
@@ -99,12 +99,22 @@ public class SaksbehandlingTest {
     }
 
     @Test
-    void saksbehandlerSkalIkkeKunneBehandleFeilSpesialisering() {
+    void testSaksbehandlerSkalIkkeKunneBehandleFeilSpesialiseringVedGodkjenne() {
         Saksbehandler saksbehandler =
                 new Saksbehandler("Kari Nordmann", Spesialiseringer.AVSLAG_PAA_GRUNN_AV_FOR_LAV_INTEKT);
 
         Sak sak = new Sak(2116, Spesialiseringer.INNVILGET);
 
         assertThrows(IllegalArgumentException.class, () -> saksbehandler.godkjennSak(sak));
+    }
+
+    @Test
+    void testSaksbehandlerSkalIkkeKunneBehandleFeilSpesialiseringVedAvslå() {
+        Saksbehandler saksbehandler =
+                new Saksbehandler("Kari Nordmann", Spesialiseringer.AVSLAG_PAA_GRUNN_AV_FOR_LAV_INTEKT);
+
+        Sak sak = new Sak(2116, Spesialiseringer.INNVILGET);
+
+        assertThrows(IllegalArgumentException.class, () -> saksbehandler.avslåSak(sak));
     }
 }
