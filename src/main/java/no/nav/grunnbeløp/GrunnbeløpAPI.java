@@ -41,6 +41,7 @@ public class GrunnbeløpAPI {
         if (grunnbeløpRespons.statusCode() != 200) {
             throw new IOException("Klarte ikke hente grunnbeløp");
         }
+
         return new JSONObject(grunnbeløpRespons.body()).getDouble("grunnbeløp");
     }
 }

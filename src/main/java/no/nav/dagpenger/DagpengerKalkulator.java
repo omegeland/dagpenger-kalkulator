@@ -1,10 +1,10 @@
 package no.nav.dagpenger;
-import no.nav.dagpenger.BeregningsMetode;
 import no.nav.grunnbeløp.GrunnbeløpVerktøy;
+import no.nav.saksbehandling.Sak;
+import no.nav.saksbehandling.Spesialiseringer;
 import no.nav.årslønn.Årslønn;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,8 +24,8 @@ import java.util.List;
  */
 public class DagpengerKalkulator {
 
-    public final GrunnbeløpVerktøy grunnbeløpVerktøy; //mulig at den bør gjøres private slik at andre klasser ikke kan endre på listen
-    public final List<Årslønn> årslønner; //mulig at den bør gjøres private slik at andre klasser ikke kan endre på listen
+    private final GrunnbeløpVerktøy grunnbeløpVerktøy;
+    private final List<Årslønn> årslønner;
 
     public DagpengerKalkulator() {
         this.grunnbeløpVerktøy = new GrunnbeløpVerktøy();
@@ -39,25 +39,51 @@ public class DagpengerKalkulator {
      * @return dagsatsen en person har rett på.
      */
     public double kalkulerDagsats() {
-        if (!harRettigheterTilDagpenger() || årslønner.isEmpty()) {
+        
+        if (harIkkeGrunnlagForDagpenger()) {
             return 0;
         } 
+
         int arbeidsdagerIÅret = 260;
         BeregningsMetode metode = velgBeregningsMetode();
         switch (metode) {
-        case SISTE_ÅRSLØNN:
-            return Math.ceil(hentÅrslønnVedIndeks(0).hentÅrslønn() / arbeidsdagerIÅret);
+            case SISTE_ÅRSLØNN:
+                return Math.ceil(hentÅrslønnVedIndeks(0).hentÅrslønn() / arbeidsdagerIÅret);
 
-        case GJENNOMSNITTET_AV_TRE_ÅR:
-            return Math.ceil((summerNyligeÅrslønner(3) / 3) / arbeidsdagerIÅret);
+            case GJENNOMSNITTET_AV_TRE_ÅR:
+                return Math.ceil((summerNyligeÅrslønner(3) / 3) / arbeidsdagerIÅret);
 
-        case MAKS_ÅRLIG_DAGPENGERGRUNNLAG:
-            return Math.ceil(grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag() / arbeidsdagerIÅret);
+            case MAKS_ÅRLIG_DAGPENGERGRUNNLAG:
+                return Math.ceil(grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag() / arbeidsdagerIÅret);
 
-        default:
-            throw new IllegalStateException("Ukjent beregningsmetode: " + metode);
+            default:
+                throw new IllegalStateException("Ukjent beregningsmetode: " + metode);
+        }
     }
-        
+    
+    public Sak kalkulerSak() {
+
+        if (harIkkeGrunnlagForDagpenger()) {
+            return new Sak(0, Spesialiseringer.AVSLAG_PAA_GRUNN_AV_FOR_LAV_INTEKT);
+        }
+
+        double dagsats = kalkulerDagsats();
+        BeregningsMetode metode = velgBeregningsMetode();
+
+        switch (metode) {
+            case MAKS_ÅRLIG_DAGPENGERGRUNNLAG:
+                return new Sak(dagsats, Spesialiseringer.INNVILGET_MED_MAKSSATS);
+            case SISTE_ÅRSLØNN:
+            case GJENNOMSNITTET_AV_TRE_ÅR:
+                return new Sak(dagsats, Spesialiseringer.INNVILGET);
+
+            default:
+                throw new IllegalStateException("Ukjent beregningsmetode: " + metode);
+        }
+    }
+
+    public boolean harIkkeGrunnlagForDagpenger() {
+        return årslønner.isEmpty() || !harRettigheterTilDagpenger();  
     }
 
     /**
@@ -82,10 +108,10 @@ public class DagpengerKalkulator {
         BeregningsMetode beregningsMetode;
 
         if (hentÅrslønnVedIndeks(0).hentÅrslønn() > (summerNyligeÅrslønner(3) / 3)) {
-           beregningsMetode = BeregningsMetode.SISTE_ÅRSLØNN;
-           if (hentÅrslønnVedIndeks(0).hentÅrslønn() > grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag()) {
-               beregningsMetode = BeregningsMetode.MAKS_ÅRLIG_DAGPENGERGRUNNLAG;
-           }
+            beregningsMetode = BeregningsMetode.SISTE_ÅRSLØNN;
+            if (hentÅrslønnVedIndeks(0).hentÅrslønn() > grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag()) {
+                beregningsMetode = BeregningsMetode.MAKS_ÅRLIG_DAGPENGERGRUNNLAG;
+            }
         } else {
             beregningsMetode = BeregningsMetode.GJENNOMSNITTET_AV_TRE_ÅR;
         }
@@ -107,7 +133,7 @@ public class DagpengerKalkulator {
     }
 
     /**
-     * Summemer sammen antall årslønner basert på gitt parameter.
+     * Summerer sammen antall årslønner basert på gitt parameter.
      * @param antallÅrÅSummere antall år med årslønner vi vil summere.
      * @return summen av årslønner.
      */
